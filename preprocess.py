@@ -49,12 +49,12 @@ class Preprocess(nn.Module):
         self.model_key = model_key
         # Create model
         self.vae = AutoencoderKL.from_pretrained(model_key, subfolder="vae", revision="fp16",
-                                                 torch_dtype=torch.float16).to(self.device)
-        self.tokenizer = CLIPTokenizer.from_pretrained(model_key, subfolder="tokenizer")
+                                                 torch_dtype=torch.float16, cache_dir="/app/.cache").to(self.device)
+        self.tokenizer = CLIPTokenizer.from_pretrained(model_key, subfolder="tokenizer", cache_dir="/app/.cache")
         self.text_encoder = CLIPTextModel.from_pretrained(model_key, subfolder="text_encoder", revision="fp16",
-                                                          torch_dtype=torch.float16).to(self.device)
+                                                          torch_dtype=torch.float16, cache_dir="/app/.cache").to(self.device)
         self.unet = UNet2DConditionModel.from_pretrained(model_key, subfolder="unet", revision="fp16",
-                                                   torch_dtype=torch.float16).to(self.device)
+                                                   torch_dtype=torch.float16, cache_dir="/app/.cache").to(self.device)
         self.paths, self.frames, self.latents = self.get_data(opt.data_path, opt.n_frames)
         
         if self.sd_version == 'ControlNet':
@@ -294,7 +294,7 @@ def prep(opt):
         model_key = "runwayml/stable-diffusion-v1-5"
     elif opt.sd_version == 'depth':
         model_key = "stabilityai/stable-diffusion-2-depth"
-    toy_scheduler = DDIMScheduler.from_pretrained(model_key, subfolder="scheduler")
+    toy_scheduler = DDIMScheduler.from_pretrained(model_key, subfolder="scheduler", cache_dir="/app/.cache")
     toy_scheduler.set_timesteps(opt.save_steps)
     timesteps_to_save, num_inference_steps = get_timesteps(toy_scheduler, num_inference_steps=opt.save_steps,
                                                            strength=1.0,
