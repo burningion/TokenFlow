@@ -44,7 +44,7 @@ class TokenFlow(nn.Module):
         # Create SD models
         print('Loading SD model')
 
-        pipe = StableDiffusionPipeline.from_pretrained(model_key, torch_dtype=torch.float16).to("cuda")
+        pipe = StableDiffusionPipeline.from_pretrained(model_key, torch_dtype=torch.float16, cache_dir="/app/.cache").to("cuda")
         # pipe.enable_xformers_memory_efficient_attention()
 
         self.vae = pipe.vae
@@ -52,7 +52,7 @@ class TokenFlow(nn.Module):
         self.text_encoder = pipe.text_encoder
         self.unet = pipe.unet
 
-        self.scheduler = DDIMScheduler.from_pretrained(model_key, subfolder="scheduler")
+        self.scheduler = DDIMScheduler.from_pretrained(model_key, subfolder="scheduler", cache_dir="/app/.cache")
         self.scheduler.set_timesteps(config["n_timesteps"], device=self.device)
         print('SD model loaded')
 
